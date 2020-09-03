@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Faker\Factory;
+use Faker\Provider\ko_KR\Address;
+use Faker\Provider\Person;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\DB;
+use mysql_xdevapi\Table;
 
 class MysqlController extends BaseController
 {
@@ -30,14 +35,27 @@ class MysqlController extends BaseController
         ]);
     }
 
-    public function select()
+    public function select(Factory $factory)
     {
-        return $this->data;
+        $faker = $factory::create('ko_KR'); // create a French faker
+        $data = [
+            'user_id' => $faker->word,
+            'password' => $faker->password,
+            'name' => $faker->name,
+            'address' => $faker->address,
+            'compony' => $faker->company,
+            'email' => $faker->email,
+            'birth_day' => $faker->date(),
+            'phone_number' => $faker->phoneNumber,
+            'home_number' => $faker->phoneNumber,
+        ];
+        $this->insert($data);
+        return $data;
     }
 
-    public function insert()
+    public function insert($data)
     {
-        array_push($this->data, "Hello World!!");
+        DB::table('users')->insert($data);
         return $this->data;
     }
 
